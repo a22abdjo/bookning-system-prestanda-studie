@@ -8,7 +8,11 @@ const PORT = 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/api/test", (req, res) => {
-    res.json({message: "API works"});
+    const dbType = req.query.db || "unknown";
+
+    res.json({
+        message: `API works with ${dbType}`
+    });
 });
 
 app.listen(PORT, () => {
