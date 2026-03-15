@@ -4,14 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bokningssytem</title>
+    <link rel="stylesheet" href="style.css"/> 
 </head>
 <body>
     <h1>Responstidstest för Bokningssytem</h1>
     
-    <div class="buttons">
-      <button onclick="loadBookings('mysql')"> Hämta bokningar från MySQL</button>
-      <button onclick="loadBookings('mongodb')"> Hämta bokningar från MongoDB</button>  
-    </div>
+    <section>
+        <h2>Sökning</h2>
+        <input type="text" id="searchName" placeholder="Sök namn" />
+        <button onclick="searchBookings()">Sök</button>
+    </section>
+
+    <section>
+        <h2>Bokning</h2>
+        <input type="text" id="name" placeholder="Namn" />
+        <input type="text" id="facility" placeholder="Lokal" />
+        <input type="date" id="bookingDate" />
+        <button onclick="createBooking()">Boka</button>
+    </section>
+
+    <section>
+        <h2>BokningsHistorik</h2>
+        <button onclick="loadHistory()">Hämta historik</button>
+    </section>
+
 
     <p id="time">Responsetid visas här</p>
 

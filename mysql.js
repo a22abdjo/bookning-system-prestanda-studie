@@ -33,6 +33,7 @@ async function searchBookingsByName(name) {
 }
 
 async function createBooking(name, facility, bookingDate, status = "confirmed") {
+    
     const [result] = await pool.query(`
         INSERT INTO bookings (name, facility, booking_date, status)
         VALUES (?, ?, ?, ?)
@@ -40,7 +41,8 @@ async function createBooking(name, facility, bookingDate, status = "confirmed") 
         ,
         [name, facility, bookingDate, status]
     );
-        return result;
+    
+      return result; 
 }
 
 module.exports = {

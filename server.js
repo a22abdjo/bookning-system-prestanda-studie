@@ -1,7 +1,10 @@
 
 const express = require("express");
 const path = require("path");
-const { getBookingsHistory, searchBookingsByName, createBooking } = require("./mysql");
+
+const { 
+    getBookingsHistory, searchBookingsByName, createBooking 
+} = require("./mysql");
 
 const app = express();
 const PORT = 3000;
@@ -40,12 +43,18 @@ app.get("/api/mysql/search", async (req, res) => {
 
 app.post("/api/mysql/book", async (req, res) => {
     try {
-      const name = req.query.name || "";  
+      const { name, facility, booking_date } = req.body || {};
 
-      const data = await createBooking(name);
+      if (!name || !facility || !booking_date) {
+        return res.status(400).json ({
+            error: "name, facility and booking_date are required"
+        });
+      }
+
+      const result = await createBooking(name, facility, booking_date);
 
       res.json({
-        message: "bookings created in MySQL",
+        message: "Bookings created in MySQL",
         insertId: result.insertId
       });
     } catch (error) {
