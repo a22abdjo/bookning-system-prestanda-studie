@@ -1,7 +1,7 @@
 
 const express = require("express");
 const path = require("path");
-const { getBookingsHistory, searchBookingsByName } = require("./mysql");
+const { getBookingsHistory, searchBookingsByName, createBooking } = require("./mysql");
 
 const app = express();
 const PORT = 3000;
@@ -42,7 +42,7 @@ app.post("/api/mysql/book", async (req, res) => {
     try {
       const name = req.query.name || "";  
 
-      const data = await searchBookingsByName(name);
+      const data = await createBooking(name);
 
       res.json({
         message: "bookings created in MySQL",
@@ -56,5 +56,5 @@ app.post("/api/mysql/book", async (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
