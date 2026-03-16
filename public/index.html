@@ -8,31 +8,74 @@
 </head>
 <body>
     <h1>Responstidstest för Bokningssytem</h1>
+
+    <div class="top-layout">
     
-    <section>
-        <h2>Sökning</h2>
-        <input type="text" id="searchName" placeholder="Sök namn" />
-        <button onclick="searchBookings()">Sök</button>
+        <!--Mysql Box-->
+            <section class="db-panel">
+                <h2>MySQL</h2>
+
+                <div class="action-group">   
+                    <h3>Sökning</h3>
+                    <input type="text" id="searchName" placeholder="Sök namn" />
+                    <button onclick="searchBookings('mysql')">Sök i MySQL</button>
+                </div> 
+
+                <div class="action-group"> 
+                    <h3>Bokning</h3>
+                    <input type="text" id="name" placeholder="Namn" />
+                    <input type="text" id="facility" placeholder="Lokal" />
+                    <input type="date" id="bookingDateMysql" />
+                    <button onclick="createBooking('mysql')">Boka i MySQL</button>
+                </div>
+
+                <div class="action-group"> 
+                    <h3>BokningsHistorik</h3>
+                    <button onclick="loadHistory('mysql')">Hämta historik</button>
+                </div>
+
+                <div class="result-box"> 
+                    <h2>Mysql resultat</h2>
+                    <ul id="resultMysql"></ul>
+                </div>
+            </section>
+
+             <!--MongoDB Box-->
+            <section class="db-panel">
+                <h2>--MongoDB</h2>
+
+                <div class="action-group">   
+                    <h3>Sökning</h3>
+                    <input type="text" id="searchNameMongo" placeholder="Sök namn" />
+                    <button onclick="searchBookings('mongo')">Sök i MongoDb</button>
+                </div> 
+
+                <div class="action-group"> 
+                    <h3>Bokning</h3>
+                    <input type="text" id="nameMongo" placeholder="Namn" />
+                    <input type="text" id="facilityMongo" placeholder="Lokal" />
+                    <input type="date" id="bookingDateMongo" />
+                    <button onclick="createBooking('mongo')">Boka i MongoDb</button>
+                </div>
+
+                <div class="action-group"> 
+                    <h3>BokningsHistorik</h3>
+                    <button onclick="loadHistory('mongo')">Hämta historik</button>
+                </div>
+
+                <div class="result-box"> 
+                    <h2>MongoDB resultat</h2>
+                    <ul id="resultMysql"></ul>
+                </div>
+            </section>
+
+    </div>
+
+    <section class="center-panel">
+        <h2>Gemensamt resultat</h2>
+        <p id="time">Responsetid visas här</p>
+        <ul id="result"></ul>
     </section>
-
-    <section>
-        <h2>Bokning</h2>
-        <input type="text" id="name" placeholder="Namn" />
-        <input type="text" id="facility" placeholder="Lokal" />
-        <input type="date" id="bookingDate" />
-        <button onclick="createBooking()">Boka</button>
-    </section>
-
-    <section>
-        <h2>BokningsHistorik</h2>
-        <button onclick="loadHistory()">Hämta historik</button>
-    </section>
-
-
-    <p id="time">Responsetid visas här</p>
-
-    <h2>Bokningar</h2>
-    <ul id="result"></ul>
 
     <script src="app.js"></script>
 </body>
