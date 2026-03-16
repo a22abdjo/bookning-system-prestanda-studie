@@ -95,6 +95,28 @@ app.post("/api/mysql/book", async (req, res) => {
     } 
 });
 
+app.post("/api/mongo/book", async (req, res) => {
+    try {
+      const { name, facility, booking_date } = req.body || {};
+
+      if (!name || !facility || !booking_date) {
+        return res.status(400).json ({
+            error: "name, facility and booking_date are required"
+        });
+      }
+
+      const result = await createBooking(name, facility, booking_date);
+
+      res.json({
+        message: "Bookings created in MongoDB",
+        insertId: result.insertId
+      });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "MongoDB booking error"});
+    } 
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
