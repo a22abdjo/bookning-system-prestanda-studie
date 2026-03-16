@@ -1,4 +1,11 @@
 
+const {
+    getMongoBookingsHistory,
+    searchMongoBookingsByName,
+    createMongoBooking
+} = require("./mongo");
+
+
 const express = require("express");
 const path = require("path");
 
@@ -29,6 +36,18 @@ app.get("/api/mysql/history", async (req, res) => {
         res.status(500).json({ error: "MySQL history error"});
     } 
 });
+
+app.get("/api/mongo/history", async (req, res) => {
+    try {
+      const data = await getMongoBookingsHistory();
+      res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Mongo history error"});
+    } 
+});
+
+
 
 app.get("/api/mysql/search", async (req, res) => {
     try {
