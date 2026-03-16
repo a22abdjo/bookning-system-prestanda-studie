@@ -27,6 +27,7 @@ app.get("/api/test", (req, res) => {
     });
 });
 
+//Server API History MySQL och MongoDB
 app.get("/api/mysql/history", async (req, res) => {
     try {
       const data = await getBookingsHistory();
@@ -47,8 +48,7 @@ app.get("/api/mongo/history", async (req, res) => {
     } 
 });
 
-
-
+//Server API Seacrh MySQL och MongoDB
 app.get("/api/mysql/search", async (req, res) => {
     try {
       const name = req.query.name || "";  
@@ -60,6 +60,19 @@ app.get("/api/mysql/search", async (req, res) => {
     } 
 });
 
+app.get("/api/mongo/search", async (req, res) => {
+    try {
+      const name = req.query.name || "";  
+      const data = await searchMongoBookingsByName(name);
+      res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Mongo search error"});
+    } 
+});
+
+
+//Server API Book MySQL och MongoDB
 app.post("/api/mysql/book", async (req, res) => {
     try {
       const { name, facility, booking_date } = req.body || {};
