@@ -17,14 +17,14 @@
 
                 <div class="action-group">   
                     <h3>Sökning</h3>
-                    <input type="text" id="searchName" placeholder="Sök namn" />
+                    <input type="text" id="searchNameMysql" placeholder="Sök namn" />
                     <button onclick="searchBookings('mysql')">Sök i MySQL</button>
                 </div> 
 
                 <div class="action-group"> 
                     <h3>Bokning</h3>
-                    <input type="text" id="name" placeholder="Namn" />
-                    <input type="text" id="facility" placeholder="Lokal" />
+                    <input type="text" id="nameMysql" placeholder="Namn" />
+                    <input type="text" id="facilityMysql" placeholder="Lokal" />
                     <input type="date" id="bookingDateMysql" />
                     <button onclick="createBooking('mysql')">Boka i MySQL</button>
                 </div>
@@ -65,7 +65,7 @@
 
                 <div class="result-box"> 
                     <h2>MongoDB resultat</h2>
-                    <ul id="resultMysql"></ul>
+                    <ul id="resultMongo"></ul>
                 </div>
             </section>
 

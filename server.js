@@ -105,7 +105,7 @@ app.post("/api/mongo/book", async (req, res) => {
         });
       }
 
-      const result = await createBooking(name, facility, booking_date);
+      const result = await createMongoBooking(name, facility, booking_date);
 
       res.json({
         message: "Bookings created in MongoDB",

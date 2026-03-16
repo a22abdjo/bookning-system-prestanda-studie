@@ -1,42 +1,78 @@
 
-async function loadHistory() {
+async function loadHistory(dbType) {
     const start = performance.now();
 
-    const response = await fetch("/api/mysql/history");
+    let url = "";
+    if (dbType === "mysql") {
+        url = "/api/mysql/history";
+    } else {
+        url = "/api/mongo/history";
+    }
+
+    const response = await fetch(url);
     const data = await response.json();
 
     const stop = performance.now();
     const totalTime = stop - start;
 
-    document.getElementById("time").textContent = `Responstid (mysql history): ${totalTime.toFixed(2)} ms`;
+    document.getElementById("time").textContent = `Responstid (${dbType} history): ${totalTime.toFixed(2)} ms`;
 
-   renderResults(data);
+   renderResults(dbType, data);
 }
 
-async function searchBookings() {
-    const searchName = document.getElementById("searchName").value;
+async function searchBookings(dbType) {
+    const searchName = 
+       dbType === "mysql"
+          ? document.getElementById("searchNameMysql").value
+          : document.getElementById("searchNameMongo").value;
 
       const start = performance.now();
 
-    const response = await fetch(`/api/mysql/search?name=${encodeURIComponent(searchName)}`);
+      let url = "";
+      if (dbType === "mysql") {
+        url = `/api/mysql/search?name=${encodeURIComponent(searchName)}`;
+    } else {
+        url = `/api/mongo/search?name=${encodeURIComponent(searchName)}`;
+    }
+
+    const response = await fetch(url);
     const data = await response.json();
 
     const stop = performance.now();
     const totalTime = stop - start;
 
-    document.getElementById("time").textContent = `Responstid (mysql search): ${totalTime.toFixed(2)} ms`;
+    document.getElementById("time").textContent = `Responstid (${dbType} search): ${totalTime.toFixed(2)} ms`;
 
-    renderResults(data);
+    renderResults(dbType, data);
 }
 
-async function createBooking() {
-    const name = document.getElementById("name").value;
-    const facility = document.getElementById("facility").value;
-    const bookingDate = document.getElementById("bookingDate").value;
+async function createBooking(dbType) {
+    const name = 
+       dbType === "mysql"
+          ? document.getElementById("nameMysql").value
+          : document.getElementById("nameMongo").value;
+
+    const facility = 
+       dbType === "mysql"
+          ? document.getElementById("facilityMysql").value
+          : document.getElementById("facilityMongo").value;
+
+    const bookingDate = 
+       dbType === "mysql"
+          ? document.getElementById("bookingDateMysql").value
+          : document.getElementById("bookingDateMongo").value;
 
     const start = performance.now();
 
-    const response = await fetch("/api/mysql/book", {
+    let url = "";
+
+     if (dbType === "mysql") {
+        url = '/api/mysql/book';
+    } else {
+        url = '/api/mongo/book';
+    }
+
+    const response = await fetch(url, {
         method: "POST",
         headers: {
              "Content-Type": "application/json"    
@@ -47,24 +83,36 @@ async function createBooking() {
             booking_date: bookingDate        
         })
         });
+
     const data = await response.json();
 
     const stop = performance.now();
     const totalTime = stop - start;
 
-    document.getElementById("time").textContent = `Responstid (mysql booking): ${totalTime.toFixed(2)} ms`;
+    document.getElementById("time").textContent = `Responstid (${dbType} booking): ${totalTime.toFixed(2)} ms`;
 
-    renderResults([data]);
+    renderResults(dbType, [data]);
 }
 
-function renderResults(data) {
-    const resultList = document.getElementById("result");
+function renderResults(dbType, data) {
+    const resultList = 
+        dbType === "mysql"
+            ? document.getElementById("resultMysql")
+            : document.getElementById("resultMongo");
+
     resultList.innerHTML = "";
 
     if (Array.isArray(data)) {
         data.forEach(item => {
             const li = document.createElement("li");
-            li.textContent = JSON.stringify(item);
+            
+            if (item.name) {
+                li.textContent =
+                    `${item.name} | ${item.facility} | ${item.booking_date} | ${item.status}`;
+            }else {
+               li.textContent = JSON.stringify(item);  
+            }
+
             resultList.appendChild(li);
         });
     } else {
