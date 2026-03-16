@@ -122,18 +122,12 @@ button:hover {
     font-family: monospace;
 }
 
-
-
-.buttons {
-    margin-bottom: 1rem;
-}
-
 button {
     margin-right: 1rem;
     padding: 0.6rem 1rem;
     cursor: pointer;
+    border: none;
+    color: white;
+    border-radius: 5px;
 }
 
-ul {
-    padding-left: 1.5rem;
-}
