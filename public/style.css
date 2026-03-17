@@ -73,7 +73,7 @@ h2 {
     color: #1f3a5f;
 }
 
-input {
+input, select {
     display: block;
     margin-bottom: 10px;
     padding: 8px;
@@ -81,6 +81,16 @@ input {
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+select {
+    cursor: pointer;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #1f3a5f;
+    box-shadow: 0 0 3px rgba(31, 58, 95, 0.4);
 }
 
 button:hover {

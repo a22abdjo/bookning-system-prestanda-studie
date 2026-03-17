@@ -24,7 +24,15 @@
                 <div class="action-group"> 
                     <h3>Bokning</h3>
                     <input type="text" id="nameMysql" placeholder="Namn" />
-                    <input type="text" id="facilityMysql" placeholder="Lokal" />
+                    <select id="facilityMysql">
+                        <option value="">Välj lokal</option>
+                        <option value="">Sporthall</option>
+                        <option value="">Konferensrum</option>
+                        <option value="">Mötesrum</option>
+                        <option value="">Idrottshall</option>
+                        <option value="">Lokal A</option>
+                        <option value="">Lokal B</option>
+                    </select>
                     <input type="date" id="bookingDateMysql" />
                     <button onclick="createBooking('mysql')">Boka i MySQL</button>
                 </div>
@@ -42,7 +50,7 @@
 
              <!--MongoDB Box-->
             <section class="db-panel">
-                <h2>--MongoDB</h2>
+                <h2>MongoDB</h2>
 
                 <div class="action-group">   
                     <h3>Sökning</h3>
@@ -53,7 +61,15 @@
                 <div class="action-group"> 
                     <h3>Bokning</h3>
                     <input type="text" id="nameMongo" placeholder="Namn" />
-                    <input type="text" id="facilityMongo" placeholder="Lokal" />
+                    <select id="facilityMongo">
+                        <option value="">Välj lokal</option>
+                        <option value="">Sporthall</option>
+                        <option value="">Konferensrum</option>
+                        <option value="">Mötesrum</option>
+                        <option value="">Idrottshall</option>
+                        <option value="">Lokal A</option>
+                        <option value="">Lokal B</option>
+                    </select>
                     <input type="date" id="bookingDateMongo" />
                     <button onclick="createBooking('mongo')">Boka i MongoDb</button>
                 </div>
