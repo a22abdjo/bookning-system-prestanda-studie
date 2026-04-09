@@ -4,7 +4,7 @@ const fs = require("fs");
 console.log("SCRIPT STARTED");
 
 const results = [];
-const TEST_COUNT = 5; // börja litet
+const TEST_COUNT = 10; // börja litet
 
 async function measureRequest(database, operation, url, testNumber, options= {}) {
         const start = performance.now();
