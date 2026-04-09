@@ -3,36 +3,40 @@
 console.log("SCRIPT STARTED");
 
 const results = [];
-const TEST_COUNT = 100; // börja litet
+const TEST_COUNT = 5; // börja litet
 
-async function runMySQLHistoryTests() {
-    for (let i = 0; i < TEST_COUNT; i++) {
-        console.log(`Running test ${i + 1}`);
-
+async function measureRequest(database, operation, url, testNumber) {
         const start = performance.now();
 
-        const response = await fetch("http://localhost:3000/api/mysql/history");
+        const response = await fetch(url);
         const data = await response.json();
 
         const end = performance.now();
         const duration = end - start;
 
         results.push({
-            test: i + 1,
-            database: "mysql",
-            operation: "history",
+            test: testNumber,
+            database,
+            operation,
             duration: duration.toFixed(2),
-            rows: data.length
+            rows: Array.isArray(data) ? data.length : 0
         });
 
-        console.log(`Test ${i + 1}: ${duration.toFixed(2)} ms`);
+        console.log(`${database} ${operation} test ${testNumber}: ${duration.toFixed(2)} ms`);
+
+}
+
+async function runHistoryTests() {
+    for (let i = 0; i < TEST_COUNT; i++) {
+        await measureRequest("mysql","history", "http://localhost:3000/api/mysql/history", i + 1);
+        await measureRequest("mongo","history", "http://localhost:3000/api/mongo/history", i + 1);
     }
 
     console.log("\nAll results:");
     console.log(results);
 }
 
-runMySQLHistoryTests().catch(error => {
+runHistoryTests().catch(error => {
     console.error("Test failed:");
     console.error(error);
 });
