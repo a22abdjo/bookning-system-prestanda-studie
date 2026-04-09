@@ -107,6 +107,19 @@ function saveResultsToCSV(){
     fs.writeFileSync("performance-results.csv", csv);
 }
 
+function calculateAverage(database, operation) {
+    const filtered = results.filter(
+        item => item.database === database && item.operation === operation
+    );
+
+    if (filtered.length ===0) {
+        return 0;
+    }
+
+    const total = filtered.reduce((sum, item) => sum + Number(item.duration), 0);
+    return (total / filtered.length).toFixed(2);
+}
+
 async function runTests() {
     await runHistoryTests();
     await runSearchTests();
@@ -117,6 +130,14 @@ async function runTests() {
 
     saveResultsToCSV();
     console.log("Saved Results to performance-results.csv");
+
+    console.log(`MySQL history avg: ${calculateAverage("mysql", "history")}ms`);
+    console.log(`Mongo history avg: ${calculateAverage("mongo", "history")}ms`);
+    console.log(`MySQL search avg: ${calculateAverage("mysql", "search")}ms`);
+    console.log(`Mongo search avg: ${calculateAverage("mongo", "search")}ms`);
+    console.log(`MySQL booking avg: ${calculateAverage("mysql", "booking")}ms`);
+    console.log(`Mongo booking avg: ${calculateAverage("mongo", "booking")}ms`);
+    
 }
 
 runTests().catch(error => {
