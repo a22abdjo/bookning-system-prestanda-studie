@@ -1,5 +1,6 @@
 //First simple automated test for MySQL history
 
+const fs = require("fs");
 console.log("SCRIPT STARTED");
 
 const results = [];
@@ -96,6 +97,16 @@ async function runBookingTests() {
     }
 }
 
+function saveResultsToCSV(){
+    let csv = "Test,Database,Operation,Duration(ms),Status\n";
+
+    results.forEach(item => {
+        csv += `${item.test}, ${item.database}, ${item.operation}, ${item.duration}, ${item.status}\n`;
+    });
+
+    fs.writeFileSync("performance-results.csv", csv);
+}
+
 async function runTests() {
     await runHistoryTests();
     await runSearchTests();
@@ -103,6 +114,9 @@ async function runTests() {
 
     console.log("\nAll results:");
     console.log(results);
+
+    saveResultsToCSV();
+    console.log("Saved Results to performance-results.csv");
 }
 
 runTests().catch(error => {
