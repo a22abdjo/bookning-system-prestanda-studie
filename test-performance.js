@@ -5,10 +5,10 @@ console.log("SCRIPT STARTED");
 const results = [];
 const TEST_COUNT = 5; // börja litet
 
-async function measureRequest(database, operation, url, testNumber) {
+async function measureRequest(database, operation, url, testNumber, options= {}) {
         const start = performance.now();
 
-        const response = await fetch(url);
+        const response = await fetch(url, options);
         const data = await response.json();
 
         const end = performance.now();
@@ -19,11 +19,11 @@ async function measureRequest(database, operation, url, testNumber) {
             database,
             operation,
             duration: duration.toFixed(2),
-            rows: Array.isArray(data) ? data.length : 0
+            status: response.status
         });
 
         console.log(`${database} ${operation} test ${testNumber}: ${duration.toFixed(2)} ms`);
-
+        return data;
 }
 
 async function runHistoryTests() {
@@ -38,7 +38,7 @@ async function runHistoryTests() {
 
 async function runSearchTests() {
     const searchName = "Abbe";
-    
+
     for (let i = 0; i < TEST_COUNT; i++) {
         await measureRequest(
             "mysql",
@@ -56,9 +56,50 @@ async function runSearchTests() {
     }
 }
 
+async function runBookingTests() {
+    for (let i = 0; i < TEST_COUNT; i++) {
+        await measureRequest(
+            "mysql",
+            "booking",
+            "http://localhost:3000/api/mysql/book",
+            i+1,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: `Auto MySQL User ${i+1}`,
+                    facility: "Sporthall",
+                    booking_date: "2026-12-01"
+                })
+            }
+        );
+
+        await measureRequest(
+            "mongo",
+            "booking",
+            "http://localhost:3000/api/mongo/book",
+            i+1,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: `Auto Mongo User ${i+1}`,
+                    facility: "Sporthall",
+                    booking_date: "2026-12-01"
+                })
+            }
+        );
+    }
+}
+
 async function runTests() {
     await runHistoryTests();
     await runSearchTests();
+    await runBookingTests();
 
     console.log("\nAll results:");
     console.log(results);
