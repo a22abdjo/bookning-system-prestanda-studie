@@ -202,4 +202,16 @@ function fillBookingForm(dbType) {
     };
 }
 
+function fillSearchForm(dbType) {
+    const randomName = getRandomItem(testNames).split(" ")[0]; 
+        
+     if (dbType === "mysql") {
+        document.getElementById("searchNameMysql").value = randomName;
+    } else {
+        document.getElementById("searchNameMongo").value = randomName;
+    }
+
+    return randomName;
+}
+
 
