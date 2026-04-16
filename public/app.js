@@ -243,7 +243,8 @@ async function runOneBookingBrowserTest(dbType) {
         browserTestResults.push({
             database: dbType,
             operation: "booking",
-            duration: duration.toFixed(2)
+            duration: duration.toFixed(2),
+            status: "success"
         });
 
     console.log(`${dbType} booking test: ${duration.toFixed(2)} ms`);
@@ -260,7 +261,39 @@ async function runOneBookingBrowserTest(dbType) {
         console.error(`${dbType} booking failed: ${error.message}`);
 
     }
-    
-    
+}
+
+async function runOneSearchBrowserTest(dbType) {
+    fillSearchForm(dbType);
+
+    const start = performance.now();
+
+    try {
+        await searchBookings(dbType);
+
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "search",
+            duration: duration.toFixed(2),
+            status: "success"
+        });
+
+    console.log(`${dbType} search test: ${duration.toFixed(2)} ms`);
+    } catch (error) {
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "search",
+            duration: duration.toFixed(2),
+            status:"failed"
+        });
+        console.error(`${dbType} search failed: ${error.message}`);
+
+    }
 }
 
