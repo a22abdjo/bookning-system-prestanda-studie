@@ -329,3 +329,24 @@ async function runOneHistoryBrowserTest(dbType) {
     }
 }
 
+async function runBrowserTests(testCount = 3, seed = 12345) {
+    Math.setSeed(seed);
+    browserTestResults.length = 0;
+
+    for (let i = 0; i < testCount; i++) {
+        console.log(`Running browser test round ${i + 1}/${testCount}`);
+
+        await runOneHistoryBrowserTest("mysql");
+        await runOneHistoryBrowserTest("mongo");
+
+        await runOneSearchBrowserTest("mysql");
+        await runOneSearchBrowserTest("mongo");
+
+        await runOneBookingBrowserTest("mysql");
+        await runOneBookingBrowserTest("mongo");
+    }
+    
+    console.log("Browser-based tests completed");
+    console.log(browserTestResults);
+}
+
