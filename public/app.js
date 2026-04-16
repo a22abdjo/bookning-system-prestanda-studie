@@ -62,6 +62,13 @@ async function createBooking(dbType) {
           ? document.getElementById("bookingDateMysql").value
           : document.getElementById("bookingDateMongo").value;
 
+    console.log("Booking payload", {
+        dbType,
+        name,
+        facility,
+        bookingDate
+    });
+
     const start = performance.now();
 
     let url = "";
@@ -82,9 +89,14 @@ async function createBooking(dbType) {
             facility,
             booking_date: bookingDate        
         })
-        });
+    });
 
     const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Booking failed:", data);
+        throw new Error(data.error || "Booking request failed");
+    }
 
     const stop = performance.now();
     const totalTime = stop - start;
@@ -150,7 +162,6 @@ var origRandom = Math.random;
 Math.randSeed = Math.floor(Date.now());
 
 //Test data and help functions
-
 const testFacilities = [
     "Sporthall",
     "Konferensrum",
@@ -169,6 +180,7 @@ const testNames = [
     "Lina Berg"
 ];
 
+//help functions
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
@@ -180,6 +192,8 @@ function getRandomDate() {
 
 const browserTestResults = [];
 
+
+//Automatik frontend filing of formulas
 function fillBookingForm(dbType) {
     const randomName = getRandomItem(testNames) + " " + Math.floor(Math.random() * 1000);
     const randomFacility = getRandomItem(testFacilities);
@@ -214,4 +228,39 @@ function fillSearchForm(dbType) {
     return randomName;
 }
 
+//Browser testfunction for booking 
+async function runOneBookingBrowserTest(dbType) {
+    fillBookingForm(dbType);
+
+    const start = performance.now();
+
+    try {
+        await createBooking(dbType);
+
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "booking",
+            duration: duration.toFixed(2)
+        });
+
+    console.log(`${dbType} booking test: ${duration.toFixed(2)} ms`);
+    } catch (error) {
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "booking",
+            duration: duration.toFixed(2),
+            status:"failed"
+        });
+        console.error(`${dbType} booking failed: ${error.message}`);
+
+    }
+    
+    
+}
 
