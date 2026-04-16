@@ -148,3 +148,34 @@ Math.setSeed = function(seed){
 
 var origRandom = Math.random;
 Math.randSeed = Math.floor(Date.now());
+
+//Test data and help functions
+
+const testFacilities = [
+    "Sporthall",
+    "Konferensrum",
+    "Mötesrum",
+    "Idrottshall",
+    "Lokal A",
+    "Lokal B"
+];
+
+const testNames = [
+    "Anna Svensson",
+    "Peter Karlsson",
+    "Maria Andersson",
+    "Jhon Doe",
+    "Sara Ali",
+    "Lina Berg"
+];
+
+function getRandomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function getRandomDate() {
+    const day = Math.floor(Math.random() * 28) + 1;
+    return `2026-12-${String(day).padStart(2, "0")}`;
+}
+
+const browserTestResults = [];
