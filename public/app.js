@@ -179,3 +179,27 @@ function getRandomDate() {
 }
 
 const browserTestResults = [];
+
+function fillBookingForm(dbType) {
+    const randomName = getRandomItem(testNames) + " " + Math.floor(Math.random() * 1000);
+    const randomFacility = getRandomItem(testFacilities);
+    const randomDate = getRandomDate();  
+        
+     if (dbType === "mysql") {
+        document.getElementById("nameMysql").value = randomName;
+        document.getElementById("facilityMysql").value = randomFacility;
+        document.getElementById("bookingDateMysql").value = randomDate;
+    } else {
+        document.getElementById("nameMongo").value = randomName;
+        document.getElementById("facilityMongo").value = randomFacility;
+        document.getElementById("bookingDateMongo").value = randomDate;
+    }
+
+    return {
+        name: randomName,
+        facility: randomFacility,
+        bookingDate: randomDate
+    };
+}
+
+
