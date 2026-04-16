@@ -297,3 +297,35 @@ async function runOneSearchBrowserTest(dbType) {
     }
 }
 
+async function runOneHistoryBrowserTest(dbType) {
+    const start = performance.now();
+
+    try {
+        await loadHistory(dbType);
+
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "history",
+            duration: duration.toFixed(2),
+            status: "success"
+        });
+
+    console.log(`${dbType} history test: ${duration.toFixed(2)} ms`);
+    } catch (error) {
+        const end = performance.now();
+        const duration = end - start;
+
+        browserTestResults.push({
+            database: dbType,
+            operation: "history",
+            duration: duration.toFixed(2),
+            status:"failed"
+        });
+        console.error(`${dbType} history failed: ${error.message}`);
+
+    }
+}
+
