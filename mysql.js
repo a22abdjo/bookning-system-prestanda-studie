@@ -1,4 +1,4 @@
-
+// MySQL connection and queries for booking system 
 const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
@@ -8,6 +8,7 @@ const pool = mysql.createPool({
     database: "Exarbete1"
 });
 
+// Retrieve booking history
 async function getBookingsHistory() {
     const [rows] = await pool.query(`
         SELECT id, name, facility, booking_date, status
@@ -18,6 +19,7 @@ async function getBookingsHistory() {
         return rows;
 }
 
+// Search for booking through name 
 async function searchBookingsByName(name) {
     const [rows] = await pool.query(`
         SELECT id, name, facility, booking_date, status
@@ -32,6 +34,7 @@ async function searchBookingsByName(name) {
         return rows;
 }
 
+// Create a new booking 
 async function createBooking(name, facility, bookingDate, status = "confirmed") {
     
     const [result] = await pool.query(`

@@ -1,11 +1,11 @@
-//Hantering av MongoDB connection och queries för bokning system
+// MongoDB connection and queries for booking system 
 
 const { MongoClient } = require("mongodb");
 
 const uri = "mongodb://127.0.0.1:27017";
 const client = new MongoClient (uri);
 
-//Hämta boknings historik
+// Retrieve booking history
 async function getMongoBookingsHistory() {
     await client.connect();
 
@@ -21,7 +21,7 @@ async function getMongoBookingsHistory() {
     return data;
 }
 
-//Sök bokning genom namn
+// Search for booking through name 
 async function searchMongoBookingsByName(name) {
     await client.connect();
 
@@ -35,7 +35,7 @@ async function searchMongoBookingsByName(name) {
     return data;
 }
 
-//Skapa ny bokning
+// Create a new booking 
 async function createMongoBooking(name, facility, bookingDate, status = "confirmed") {
     await client.connect();
 

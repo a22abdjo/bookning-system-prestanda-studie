@@ -1,6 +1,10 @@
+// Frontend logic for the booking system.
+// Handles API calls, resposne time measurement, rendering of result.
+// Browser-based automated performance tests.
 
+// Fetch booking history from the selected database and measure repsosne time. 
 async function loadHistory(dbType) {
-    const start = performance.now();
+    const start = performance.now(); // Start Measuring before sending the API request. 
 
     let url = "";
     if (dbType === "mysql") {
@@ -9,33 +13,35 @@ async function loadHistory(dbType) {
         url = "/api/mongo/history";
     }
 
-    const response = await fetch(url);
+    const response = await fetch(url); // Send request to the backend endpoint for the selected database. 
     const data = await response.json();
 
     const stop = performance.now();
-    const totalTime = stop - start;
+    const totalTime = stop - start; // Calculate total response time in milliseconds. 
 
     document.getElementById("time").textContent = `Responstid (${dbType} history): ${totalTime.toFixed(2)} ms`;
 
    renderResults(dbType, data);
 }
 
+//Search bookings by name in the selected database and measure response time.
 async function searchBookings(dbType) {
-    const searchName = 
+
+    const searchName = // Get Search input from the correct form depending on database type.
        dbType === "mysql"
           ? document.getElementById("searchNameMysql").value
           : document.getElementById("searchNameMongo").value;
 
       const start = performance.now();
 
-      let url = "";
+      let url = ""; // Select the corrrect API endpoint for MySQL or MongoDB.
       if (dbType === "mysql") {
         url = `/api/mysql/search?name=${encodeURIComponent(searchName)}`;
     } else {
         url = `/api/mongo/search?name=${encodeURIComponent(searchName)}`;
     }
 
-    const response = await fetch(url);
+    const response = await fetch(url); // Send search request to backend and convert the response to JSON. 
     const data = await response.json();
 
     const stop = performance.now();
@@ -46,8 +52,10 @@ async function searchBookings(dbType) {
     renderResults(dbType, data);
 }
 
+// Create a new booking in the selected database and measure response time. 
 async function createBooking(dbType) {
-    const name = 
+
+    const name = // Read booking form values from either the MySQL or MongoDB panel. 
        dbType === "mysql"
           ? document.getElementById("nameMysql").value
           : document.getElementById("nameMongo").value;
@@ -62,6 +70,7 @@ async function createBooking(dbType) {
           ? document.getElementById("bookingDateMysql").value
           : document.getElementById("bookingDateMongo").value;
 
+    // Log payload to verify that frontend data is sent correctly to backend.       
     console.log("Booking payload", {
         dbType,
         name,
@@ -79,6 +88,7 @@ async function createBooking(dbType) {
         url = '/api/mongo/book';
     }
 
+    // Send booking data to backend API as JSON. 
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -93,6 +103,7 @@ async function createBooking(dbType) {
 
     const data = await response.json();
 
+    // Stop the test if the backend returns an error response. 
     if (!response.ok) {
         console.error("Booking failed:", data);
         throw new Error(data.error || "Booking request failed");
@@ -103,16 +114,18 @@ async function createBooking(dbType) {
 
     document.getElementById("time").textContent = `Responstid (${dbType} booking): ${totalTime.toFixed(2)} ms`;
 
-    renderResults(dbType, [data]);
+    renderResults(dbType, [data]); // render the created booking or backend response in the correct result panel. 
 }
 
+// Render returned database results in the corresponding UI panel. 
 function renderResults(dbType, data) {
     const resultList = 
         dbType === "mysql"
             ? document.getElementById("resultMysql")
             : document.getElementById("resultMongo");
 
-    resultList.innerHTML = "";
+    // Clear previous results before displaying new data. 
+    resultList.innerHTML = ""; 
 
     if (Array.isArray(data)) {
         data.forEach(item => {
@@ -134,8 +147,7 @@ function renderResults(dbType, data) {
     }
 }
 
-//Seed random function for browser-based tests
-
+// Seed random function used to make browser-based tests reproducible. 
 function jsf32(a, b, c, d) {
   a |= 0; b |= 0; c |= 0; d |= 0;
   var t = a - (b << 23 | b >>> 9) | 0;
@@ -161,7 +173,7 @@ Math.setSeed = function(seed){
 var origRandom = Math.random;
 Math.randSeed = Math.floor(Date.now());
 
-//Test data and help functions
+// Test data used to automatically fill forms during browser-based tests.
 const testFacilities = [
     "Sporthall",
     "Konferensrum",
@@ -180,7 +192,7 @@ const testNames = [
     "Lina Berg"
 ];
 
-//help functions
+// Select a random item from array.
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
@@ -193,12 +205,13 @@ function getRandomDate() {
 const browserTestResults = [];
 
 
-//Automatik frontend filing of formulas
+// Automatic fill the booking form with automated test data. 
 function fillBookingForm(dbType) {
     const randomName = getRandomItem(testNames) + " " + Math.floor(Math.random() * 1000);
     const randomFacility = getRandomItem(testFacilities);
     const randomDate = getRandomDate();  
         
+    // Fill the correct form depending on selected database.
      if (dbType === "mysql") {
         document.getElementById("nameMysql").value = randomName;
         document.getElementById("facilityMysql").value = randomFacility;
@@ -216,6 +229,7 @@ function fillBookingForm(dbType) {
     };
 }
 
+// Automatically fill the search field with generated test data. 
 function fillSearchForm(dbType) {
     const randomName = getRandomItem(testNames).split(" ")[0]; 
         
@@ -228,12 +242,13 @@ function fillSearchForm(dbType) {
     return randomName;
 }
 
-//Browser testfunction for booking 
+// Run one browser-based booking test and store the measure result.
 async function runOneBookingBrowserTest(dbType) {
     fillBookingForm(dbType);
 
     const start = performance.now();
 
+    // Try to execute the booking request and store the result as success or failed. 
     try {
         await createBooking(dbType);
 
@@ -263,6 +278,7 @@ async function runOneBookingBrowserTest(dbType) {
     }
 }
 
+// Run one browser-based search test and store the measured result. 
 async function runOneSearchBrowserTest(dbType) {
     fillSearchForm(dbType);
 
@@ -286,6 +302,7 @@ async function runOneSearchBrowserTest(dbType) {
         const end = performance.now();
         const duration = end - start;
 
+        // Save measured search response time for later analysis
         browserTestResults.push({
             database: dbType,
             operation: "search",
@@ -297,6 +314,7 @@ async function runOneSearchBrowserTest(dbType) {
     }
 }
 
+// Run one browser-based history test and store the measured result. 
 async function runOneHistoryBrowserTest(dbType) {
     const start = performance.now();
 
@@ -318,6 +336,7 @@ async function runOneHistoryBrowserTest(dbType) {
         const end = performance.now();
         const duration = end - start;
 
+        // Save measured history response time for later analysis
         browserTestResults.push({
             database: dbType,
             operation: "history",
@@ -329,9 +348,12 @@ async function runOneHistoryBrowserTest(dbType) {
     }
 }
 
+// Run a full browser-based test sequence for both databases.
+// Each iteration testing Search, Booking and History for MySQL and MongoDB. 
 async function runBrowserTests(testCount = 3, seed = 12345) {
-    Math.setSeed(seed);
-    browserTestResults.length = 0;
+
+    Math.setSeed(seed); // Use a fixed seed to make test data reproducible.
+    browserTestResults.length = 0; // Clear test results before starting a new test run.
 
     for (let i = 0; i < testCount; i++) {
         console.log(`Running browser test round ${i + 1}/${testCount}`);
@@ -350,14 +372,16 @@ async function runBrowserTests(testCount = 3, seed = 12345) {
     console.log(browserTestResults);
 }
 
+// Export collected browser-based test results to a CSV file for analysis.
 function downloadBrowserResultsToCSV(){
-    let csv = "Test,Database,Operation,Duration(ms),Status\n";
+    let csv = "Test,Database,Operation,Duration(ms),Status\n"; // Create CSV header row. 
 
+    // Add each measured test result as one row in the CSV file. 
     browserTestResults.forEach(item => {
         csv += `${item.test ??""},${item.database},${item.operation},${item.duration},${item.status}\n`;
     });
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;"});
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;"}); // Create downloadable CSV file from generated CSV string.
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
