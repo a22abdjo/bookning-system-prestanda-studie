@@ -121,3 +121,23 @@ function renderResults(dbType, data) {
         resultList.appendChild(li);
     }
 }
+
+function downloadBrowserResultsToCSV(){
+    let csv = "Test,Database,Operation,Duration(ms),Status\n";
+
+    browserTestResults.forEach(item => {
+        csv += `${item.test}, ${item.database}, ${item.operation}, ${item.duration}, ${item.status}\n`;
+    });
+
+    
+
+    const blob = new Blob([], { type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "browser-performance-results.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
