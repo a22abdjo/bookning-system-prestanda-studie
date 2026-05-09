@@ -243,7 +243,7 @@ function fillSearchForm(dbType) {
 }
 
 // Run one browser-based booking test and store the measure result.
-async function runOneBookingBrowserTest(dbType) {
+async function runOneBookingBrowserTest(dbType, testNumber) {
     fillBookingForm(dbType);
 
     const start = performance.now();
@@ -256,6 +256,7 @@ async function runOneBookingBrowserTest(dbType) {
         const duration = end - start;
 
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "booking",
             duration: duration.toFixed(2),
@@ -268,6 +269,7 @@ async function runOneBookingBrowserTest(dbType) {
         const duration = end - start;
 
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "booking",
             duration: duration.toFixed(2),
@@ -279,7 +281,7 @@ async function runOneBookingBrowserTest(dbType) {
 }
 
 // Run one browser-based search test and store the measured result. 
-async function runOneSearchBrowserTest(dbType) {
+async function runOneSearchBrowserTest(dbType, testNumber) {
     fillSearchForm(dbType);
 
     const start = performance.now();
@@ -291,6 +293,7 @@ async function runOneSearchBrowserTest(dbType) {
         const duration = end - start;
 
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "search",
             duration: duration.toFixed(2),
@@ -304,6 +307,7 @@ async function runOneSearchBrowserTest(dbType) {
 
         // Save measured search response time for later analysis
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "search",
             duration: duration.toFixed(2),
@@ -315,7 +319,7 @@ async function runOneSearchBrowserTest(dbType) {
 }
 
 // Run one browser-based history test and store the measured result. 
-async function runOneHistoryBrowserTest(dbType) {
+async function runOneHistoryBrowserTest(dbType, testNumber) {
     const start = performance.now();
 
     try {
@@ -325,6 +329,7 @@ async function runOneHistoryBrowserTest(dbType) {
         const duration = end - start;
 
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "history",
             duration: duration.toFixed(2),
@@ -338,6 +343,7 @@ async function runOneHistoryBrowserTest(dbType) {
 
         // Save measured history response time for later analysis
         browserTestResults.push({
+            test: testNumber,
             database: dbType,
             operation: "history",
             duration: duration.toFixed(2),
@@ -356,16 +362,19 @@ async function runBrowserTests(testCount = 3, seed = 12345) {
     browserTestResults.length = 0; // Clear test results before starting a new test run.
 
     for (let i = 0; i < testCount; i++) {
+
+        const testNumber = i + 1;
+
         console.log(`Running browser test round ${i + 1}/${testCount}`);
 
-        await runOneHistoryBrowserTest("mysql");
-        await runOneHistoryBrowserTest("mongo");
+        await runOneHistoryBrowserTest("mysql", testNumber);
+        await runOneHistoryBrowserTest("mongo", testNumber);
 
-        await runOneSearchBrowserTest("mysql");
-        await runOneSearchBrowserTest("mongo");
+        await runOneSearchBrowserTest("mysql", testNumber);
+        await runOneSearchBrowserTest("mongo", testNumber);
 
-        await runOneBookingBrowserTest("mysql");
-        await runOneBookingBrowserTest("mongo");
+        await runOneBookingBrowserTest("mysql", testNumber);
+        await runOneBookingBrowserTest("mongo", testNumber);
     }
     
     console.log("Browser-based tests completed");
@@ -374,11 +383,32 @@ async function runBrowserTests(testCount = 3, seed = 12345) {
 
 // Export collected browser-based test results to a CSV file for analysis.
 function downloadBrowserResultsToCSV(){
-    let csv = "Test,Database,Operation,Duration(ms),Status\n"; // Create CSV header row. 
+    let csv = "Test,Operation,MySQL,MongoDB\n"; // Create CSV header row. 
 
-    // Add each measured test result as one row in the CSV file. 
-    browserTestResults.forEach(item => {
-        csv += `${item.test ??""},${item.database},${item.operation},${item.duration},${item.status}\n`;
+    const operations = ["history", "search", "booking"];
+
+    // Get only MySQL rows for selected operation
+    operations.forEach(operation => {
+        const mysqlResults = browserTestResults.filter(item =>
+            item.database === "mysql" &&
+            item.operation === operation &&
+            item.status === "success" 
+
+        );
+
+        const mongoResults = browserTestResults.filter(item =>
+            item.database === "mongo" &&
+            item.operation === operation &&
+            item.status === "success" 
+        );
+
+         //Make sure both arrays have same length
+        const rowCount = Math.min(mysqlResults.length, mongoResults.length);
+
+        for (let i = 0; i < rowCount; i++) {
+            csv += `${mysqlResults[i].test}, ${operation},${mysqlResults[i].duration},${mongoResults[i].duration}\n`;  
+        }
+
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;"}); // Create downloadable CSV file from generated CSV string.
@@ -394,3 +424,63 @@ function downloadBrowserResultsToCSV(){
     URL.revokeObjectURL(url);
 }
 
+
+function downloadOperationChartCSV(operationName, fileName){
+    let csv = "Test,MySQL,MongoDB\n"; // Create CSV header row. 
+
+    // Get only MySQL rows for selected operation
+    const mysqlResults = browserTestResults.filter(item =>
+        item.database === "mysql" &&
+        item.operation === operationName &&
+        item.status === "success" 
+
+    );
+
+    const mongoResults = browserTestResults.filter(item =>
+        item.database === "mongo" &&
+        item.operation === operationName &&
+        item.status === "success" 
+    );
+
+    //Make sure both arrays have same length
+    const testCount = Math.min(mysqlResults.length, mongoResults.length);
+
+    for (let i = 0; i < testCount; i++) {
+        csv += `${mysqlResults[i].test},${mysqlResults[i].duration},${mongoResults[i].duration}\n`;  
+    }
+
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;"}); // Create downloadable CSV file from generated CSV string.
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+}
+
+//Funktion for each operation to export CSV
+function downloadSearchChartCSV() {
+    downloadOperationChartCSV(
+        "search",
+        "search-chart-data.csv"
+    );
+}
+
+function downloadBookingChartCSV() {
+    downloadOperationChartCSV(
+        "booking",
+        "booking-chart-data.csv"
+    );
+}
+
+function downloadHistoryChartCSV() {
+    downloadOperationChartCSV(
+        "history",
+        "history-chart-data.csv"
+    );
+}
